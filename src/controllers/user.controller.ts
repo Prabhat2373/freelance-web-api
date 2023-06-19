@@ -4,6 +4,7 @@ import Freelancer, { IFreelancer } from "../models/freelancer.model";
 import Client, { IClient } from "../models/company.model";
 import sendToken from "../utils/jwtToken";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors";
+import HireManager, { IHireManager } from "../models/hireManager.model";
 
 export const registerFreelancer = catchAsyncErrors(
   async (req: Request, res: Response) => {
@@ -34,8 +35,8 @@ export const registerFreelancer = catchAsyncErrors(
   }
 );
 
-export const registerClient = async (req: Request, res: Response) => {
-  try {
+export const registerClient = catchAsyncErrors(
+  async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
     // Check if the username or email already exists
@@ -66,11 +67,28 @@ export const registerClient = async (req: Request, res: Response) => {
     });
     await client.save();
 
-    res.status(201).json({ message: "Client registered successfully" });
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while registering the client" });
+    // res.status(201).json({ message: "Client registered successfully" });
+    sendToken(userAccount, client, 201, res);
   }
-};
+);
+
+export const registerHireManager = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const { user_account_id, registration_date, location, company_id } =
+      req.body;
+
+    // Create a new hire manager
+    const hireManager: IHireManager = new HireManager({
+      user_account_id,
+      registration_date,
+      location,
+      company_id,
+    });
+
+    // Save the hire manager to the database
+    const savedHireManager = await hireManager.save();
+
+    res.status(201).json(savedHireManager);
+    // sendToken()
+  }
+);
