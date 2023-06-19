@@ -1,15 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
-export interface IClient extends Document {
-  client_name: string;
-  client_location: string;
+export interface ICompany extends Document {
+  company_name: string;
+  company_location: string;
 }
 
-const clientSchema: Schema<IClient> = new Schema<IClient>({
-  client_name: String,
-  client_location: String,
+const companySchema: Schema<ICompany> = new Schema<ICompany>({
+  company_name: String,
+  company_location: String,
 });
 
-const Client = mongoose.model<IClient>('Client', clientSchema);
+const Company = mongoose.model<ICompany>('Company', companySchema);
 
-export default Client;
+export default Company;

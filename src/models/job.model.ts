@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const jobSchema = new mongoose.Schema({
-  hire_manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "HireManager" },
+  hire_manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "Client" },
   job_title: String,
   job_description: String,
   required_skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],

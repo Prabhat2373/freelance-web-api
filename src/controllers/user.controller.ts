@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
-import UserAccount, { IUserAccount } from "../models/account.model";
-import Freelancer, { IFreelancer } from "../models/freelancer.model";
-import Client, { IClient } from "../models/company.model";
-import sendToken from "../utils/jwtToken";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors";
-import HireManager, { IHireManager } from "../models/hireManager.model";
+import UserAccount, { IUserAccount } from "../models/account.model";
+import Client, { IClient } from "../models/client.model";
+import Freelancer, { IFreelancer } from "../models/freelancer.model";
+import sendToken from "../utils/jwtToken";
 
 export const registerFreelancer = catchAsyncErrors(
   async (req: Request, res: Response) => {
@@ -35,11 +34,10 @@ export const registerFreelancer = catchAsyncErrors(
   }
 );
 
-export const registerClient = catchAsyncErrors(
+export const registerCompany = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
-    // Check if the username or email already exists
     const existingUser: IUserAccount | null = await UserAccount.findOne().or([
       { username },
       { email },
@@ -67,18 +65,72 @@ export const registerClient = catchAsyncErrors(
     });
     await client.save();
 
-    // res.status(201).json({ message: "Client registered successfully" });
     sendToken(userAccount, client, 201, res);
   }
 );
+export const loginFreelancer = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const { email, password } = req.body;
 
-export const registerHireManager = catchAsyncErrors(
+    // Find the user account by email
+    const userAccount: IUserAccount | null = await UserAccount.findOne({
+      email,
+    });
+
+    // If the user account doesn't exist, return an error
+    if (!userAccount) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Check if the password matches
+    const isMatch = await userAccount.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Find the associated freelancer by user_account_id
+    const freelancer: IFreelancer | null = await Freelancer.findOne({
+      user_account_id: userAccount._id,
+    });
+
+    sendToken(userAccount, freelancer, 200, res);
+  }
+);
+
+export const loginClient = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const userAccount: IUserAccount | null = await UserAccount.findOne({
+      email,
+    });
+
+    // If the user account doesn't exist, return an error
+    if (!userAccount) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Check if the password matches
+    const isMatch = await userAccount.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Find the associated hire manager by user_account_id
+    const client: IClient | null = await Client.findOne({
+      user_account_id: userAccount._id,
+    });
+    sendToken(userAccount, client, 200, res);
+  }
+);
+
+export const registerClient = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const { user_account_id, registration_date, location, company_id } =
       req.body;
 
     // Create a new hire manager
-    const hireManager: IHireManager = new HireManager({
+    const client: IClient = new Client({
       user_account_id,
       registration_date,
       location,
@@ -86,9 +138,9 @@ export const registerHireManager = catchAsyncErrors(
     });
 
     // Save the hire manager to the database
-    const savedHireManager = await hireManager.save();
+    const savedClient = await client.save();
 
-    res.status(201).json(savedHireManager);
+    res.status(201).json(savedClient);
     // sendToken()
   }
 );
