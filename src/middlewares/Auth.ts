@@ -1,11 +1,9 @@
 import jwt from "jsonwebtoken";
-// import catchAsyncErrors from "./catchAsyncError";
+import catchAsyncErrors from "./catchAsyncErrors";
 import ErrorHandler from "../utils/errorHandler";
 import { NextFunction, Request, Response } from "express";
 import { Document, Types } from "mongoose";
 import UserAccount, { IUserAccount } from "../models/account.model";
-import catchAsyncErrors from "./catchAsyncErrors";
-// import { IUser, User } from "../model/user.model";
 
 interface RequestType extends Request {
   cookies: {
@@ -14,59 +12,44 @@ interface RequestType extends Request {
   user: (Document & Omit<IUserAccount & { _id: Types.ObjectId }, "_id">) | null;
 }
 
-interface AuthMiddlewareFactory {
-  createAuthenticatedUserMiddleware(): (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => void;
-  //   createAuthorizeRolesMiddleware(
-  //     ...roles: any[]
-  //   ): (req: RequestType, res: Response, next: NextFunction) => void;
-}
+export const isAuthenticatedUser = catchAsyncErrors(
+  async (req: RequestType, res: Response, next: NextFunction) => {
+    const { token } = req.cookies;
+    console.log("Cookie", req.cookies);
+    console.log("HAS TOKEN", token);
 
-class AuthMiddleware implements AuthMiddlewareFactory {
-  createAuthenticatedUserMiddleware() {
-    return catchAsyncErrors(
-      async (req: RequestType, res: Response, next: NextFunction) => {
-        const { token } = req.cookies;
+    if (!token) {
+      console.log("NOT TOKEN");
+      return next(
+        new ErrorHandler("Please Login to access this resource", 401)
+      );
+    }
 
-        console.log("HAS TOKEN", token);
+    const decodedData: { id: string } | null = jwt.verify(
+      token,
+      process.env.JWT_SECRET ?? ""
+    ) as { id: string } | null;
 
-        if (!token) {
-          console.log("NOT TOKEN");
-          return next(
-            new ErrorHandler("Please Login to access this resource", 401)
-          );
-        }
-        const decodedData: { id: string } | null = jwt.verify(
-          token,
-          process.env.JWT_SECRET ?? ""
-        ) as { id: string } | null;
+    req.user = (await UserAccount.findById(
+      decodedData?.id
+    )) as RequestType["user"];
+    // console.log('user', req.user._id)
 
-        req.user = (await UserAccount.findById(
-          decodedData?.id
-        )) as RequestType["user"];
-
-        next();
-      }
-    );
+    next();
   }
+);
 
-  //   createAuthorizeRolesMiddleware(...roles: any[]) {
-  //     return (req: RequestType, res: Response, next: NextFunction) => {
-  //       if (!roles.includes(req.user?.role)) {
-  //         return next(
-  //           new ErrorHandler(
-  //             `Role: ${req.user?.role} is not allowed to access this resource`,
-  //             403
-  //           )
-  //         );
-  //       }
+export const authorizeRoles = (...roles: string[]) => {
+  return (req: RequestType, res: Response, next: NextFunction) => {
+    if (!roles.includes(req.user?.isVerified)) {
+      return next(
+        new ErrorHandler(
+          `Role: ${req.user?.isVerified} is not allowed to access this resource`,
+          403
+        )
+      );
+    }
 
-  //       next();
-  //     };
-  //   }
-}
-
-export default AuthMiddleware;
+    next();
+  };
+};

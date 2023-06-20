@@ -1,7 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document } from "mongoose";
 
-const jobSchema = new mongoose.Schema({
-  hire_manager_id: { type: mongoose.Schema.Types.ObjectId, ref: "Client" },
+export interface IJob extends Document {
+  client_id: mongoose.Types.ObjectId;
+  job_title: string;
+  job_description: string;
+  required_skills: mongoose.Types.ObjectId[];
+  expected_duration_id: mongoose.Types.ObjectId;
+  complexity_id: mongoose.Types.ObjectId;
+  payment_type_id: mongoose.Types.ObjectId;
+  payment_amount: number;
+}
+
+const jobSchema: Schema<IJob> = new Schema<IJob>({
+  client_id: { type: mongoose.Schema.Types.ObjectId, ref: "Client" },
   job_title: String,
   job_description: String,
   required_skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
@@ -14,6 +25,6 @@ const jobSchema = new mongoose.Schema({
   payment_amount: Number,
 });
 
-const Job = mongoose.model("Job", jobSchema);
+const Job = mongoose.model<IJob>("Job", jobSchema);
 
-module.exports = Job;
+export default Job;

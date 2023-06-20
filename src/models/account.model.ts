@@ -3,11 +3,19 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
+export enum UserRole {
+  CLIENT = "client",
+  FREELANCER = "freelancer",
+}
+
 export interface IUserAccount extends Document {
   username: string;
   email: string;
   password: string;
   avatar?: string;
+  paymentMethod?: string;
+  isVerified?: boolean;
+  role: UserRole;
   getJWTToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
   getResetPasswordToken: () => string;
@@ -16,7 +24,9 @@ export interface IUserAccount extends Document {
 const userAccountSchema: Schema = new Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
-
+  paymentMethod: { type: String, required: false },
+  isVerified: { type: Boolean, default: false },
+  role: { type: String, required: true, enum: Object.values(UserRole) },
   password: { type: String, required: true },
   avatar: { type: String },
 });
