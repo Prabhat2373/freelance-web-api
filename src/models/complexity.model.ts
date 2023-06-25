@@ -1,9 +1,13 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document } from "mongoose";
 
-const complexitySchema = new mongoose.Schema({
+export interface IComplexity extends Document {
+  complexity_text: string;
+}
+
+const complexitySchema: Schema<IComplexity> = new Schema<IComplexity>({
   complexity_text: String,
 });
 
-const Complexity = mongoose.model("Complexity", complexitySchema);
+const Complexity = mongoose.model<IComplexity>("Complexity", complexitySchema);
 
-module.exports = Complexity;
+export default Complexity;

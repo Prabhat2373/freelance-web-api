@@ -4,6 +4,8 @@ import UserAccount, { IUserAccount, UserRole } from "../models/account.model";
 import Client, { IClient } from "../models/client.model";
 import Freelancer, { IFreelancer } from "../models/freelancer.model";
 import sendToken from "../utils/jwtToken";
+import { RequestType } from "./job.controller";
+import { sendApiResponse } from "../utils/utils";
 
 export const registerFreelancer = catchAsyncErrors(
   async (req: Request, res: Response) => {
@@ -116,5 +118,37 @@ export const loginClient = catchAsyncErrors(
       user_account_id: userAccount._id,
     });
     sendToken(userAccount, client, 200, res);
+  }
+);
+
+export const getFreelancer = catchAsyncErrors(
+  async (req: RequestType, res: Response) => {
+    console.log("ID", req.user);
+    const userAccountId = req.user?.id;
+
+    // Search for the UserAccount
+    const userAccount = await UserAccount.findById(userAccountId);
+
+    if (!userAccount) {
+      return res.status(404).json({
+        success: false,
+        message: "UserAccount not found",
+      });
+    }
+
+    // Use the user_account_id to find the corresponding Freelancer
+    const freelancer = await Freelancer.findOne({
+      user_account_id: userAccountId,
+    })
+      .populate("skills")
+      .populate("user_account_id");
+
+    if (!freelancer) {
+      return res.status(404).json({
+        success: false,
+        message: "Freelancer not found",
+      });
+    }
+    sendApiResponse(res, "success", freelancer);
   }
 );

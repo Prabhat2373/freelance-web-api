@@ -18,5 +18,7 @@ export const sendApiResponse = (
     message,
   };
 
-  res.json(response);
+  res
+    .status(status.toLocaleLowerCase() === "success" ? 200 : 404)
+    .json(response);
 };

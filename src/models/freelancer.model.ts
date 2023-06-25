@@ -15,6 +15,8 @@ export interface IFreelancer extends Document {
   hourly_rate: number;
   address: string;
   phone: string;
+  employment_history: mongoose.Schema.Types.ObjectId[];
+  meetsRequirements: (jobRequirements: any) => void;
 }
 
 const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
@@ -23,6 +25,9 @@ const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
   location: String,
   overview: String,
   skills: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
+  employment_history: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "EmploymentHistory" },
+  ],
   language: String,
   country: String,
   title: String,
@@ -33,6 +38,16 @@ const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
   address: String,
   phone: String,
 });
+
+freelancerSchema.methods.meetsRequirements = function (jobRequirements) {
+  // Check if the freelancer's skills match the job requirements
+  const freelancerSkills = this.skills.map((skill) => skill.toString());
+  const requiredSkills = jobRequirements.map((requirement) =>
+    requirement.toString()
+  );
+
+  return requiredSkills.every((skill) => freelancerSkills.includes(skill));
+};
 
 const Freelancer = mongoose.model<IFreelancer>("Freelancer", freelancerSchema);
 

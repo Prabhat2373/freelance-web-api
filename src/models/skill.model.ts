@@ -8,6 +8,6 @@ const skillSchema: Schema = new Schema({
   skill_name: String,
 });
 
-const Skill = mongoose.model<ISkill>("Skill", skillSchema);
+const Skill = mongoose.model<ISkill>("Skills", skillSchema);
 
 export default Skill;

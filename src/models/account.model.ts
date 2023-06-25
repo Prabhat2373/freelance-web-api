@@ -15,6 +15,7 @@ export interface IUserAccount extends Document {
   avatar?: string;
   paymentMethod?: string;
   isVerified?: boolean;
+  isPaymentVerified: boolean;
   role: UserRole;
   getJWTToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
@@ -29,6 +30,7 @@ const userAccountSchema: Schema = new Schema({
   role: { type: String, required: true, enum: Object.values(UserRole) },
   password: { type: String, required: true },
   avatar: { type: String },
+  isPaymentVerified: { type: Boolean },
 });
 
 // Hash password before saving
