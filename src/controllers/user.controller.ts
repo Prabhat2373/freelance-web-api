@@ -152,3 +152,42 @@ export const getFreelancer = catchAsyncErrors(
     sendApiResponse(res, "success", freelancer);
   }
 );
+
+export const loginUser = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    // Find the user account by email
+    const userAccount: IUserAccount | null = await UserAccount.findOne({
+      email,
+    });
+
+    // If the user account doesn't exist, return an error
+    if (!userAccount) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    // Check if the password matches
+    const isMatch = await userAccount.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+
+    // Find the associated client or freelancer by user_account_id
+    const client: IClient | null = await Client.findOne({
+      user_account_id: userAccount._id,
+    });
+    const freelancer: IFreelancer | null = await Freelancer.findOne({
+      user_account_id: userAccount._id,
+    });
+
+    // Determine the user type and send the corresponding token
+    if (client) {
+      sendToken(userAccount, client, 200, res);
+    } else if (freelancer) {
+      sendToken(userAccount, freelancer, 200, res);
+    } else {
+      return res.status(401).json({ error: "Invalid user type" });
+    }
+  }
+);
