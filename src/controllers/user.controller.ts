@@ -6,6 +6,7 @@ import Freelancer, { IFreelancer } from "../models/freelancer.model";
 import sendToken from "../utils/jwtToken";
 import { RequestType } from "./job.controller";
 import { sendApiResponse } from "../utils/utils";
+import Skill from "../models/skill.model";
 
 export const registerFreelancer = catchAsyncErrors(
   async (req: Request, res: Response) => {
@@ -25,7 +26,7 @@ export const registerFreelancer = catchAsyncErrors(
 
     // Create a new freelancer with the associated user account
     const freelancer: IFreelancer = new Freelancer({
-      user_account_id: savedUserAccount._id,
+      user_account: savedUserAccount._id,
       ...freelancerDetails,
     });
 
@@ -57,9 +58,9 @@ export const loginFreelancer = catchAsyncErrors(
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Find the associated freelancer by user_account_id
+    // Find the associated freelancer by user_account
     const freelancer: IFreelancer | null = await Freelancer.findOne({
-      user_account_id: userAccount._id,
+      user_account: userAccount._id,
     });
 
     sendToken(userAccount, freelancer, 200, res);
@@ -83,7 +84,7 @@ export const registerClient = catchAsyncErrors(
 
     // Create a new client with the associated user account
     const client = new Client({
-      user_account_id: savedUserAccount._id,
+      user_account: savedUserAccount._id,
       ...clientDetails,
     });
 
@@ -113,9 +114,9 @@ export const loginClient = catchAsyncErrors(
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Find the associated hire manager by user_account_id
+    // Find the associated hire manager by user_account
     const client: IClient | null = await Client.findOne({
-      user_account_id: userAccount._id,
+      user_account: userAccount._id,
     });
     sendToken(userAccount, client, 200, res);
   }
@@ -136,12 +137,12 @@ export const getFreelancer = catchAsyncErrors(
       });
     }
 
-    // Use the user_account_id to find the corresponding Freelancer
+    // Use the user_account to find the corresponding Freelancer
     const freelancer = await Freelancer.findOne({
-      user_account_id: userAccountId,
+      user_account: userAccountId,
     })
       .populate("skills")
-      .populate("user_account_id");
+      .populate("user_account");
 
     if (!freelancer) {
       return res.status(404).json({
@@ -173,13 +174,19 @@ export const loginUser = catchAsyncErrors(
       return res.status(401).json({ error: "Invalid password" });
     }
 
-    // Find the associated client or freelancer by user_account_id
+    // Find the associated client or freelancer by user_account
     const client: IClient | null = await Client.findOne({
-      user_account_id: userAccount._id,
-    });
+      user_account: userAccount._id,
+    }).populate([
+      { path: "user_account", model: UserAccount },
+      { path: "skills", model: Skill },
+    ]);
     const freelancer: IFreelancer | null = await Freelancer.findOne({
-      user_account_id: userAccount._id,
-    });
+      user_account: userAccount._id,
+    }).populate([
+      { path: "user_account", model: UserAccount },
+      { path: "skills", model: Skill },
+    ]);
 
     // Determine the user type and send the corresponding token
     if (client) {

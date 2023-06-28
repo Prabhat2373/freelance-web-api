@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IFreelancer extends Document {
-  user_account_id: mongoose.Schema.Types.ObjectId;
+  user_account: mongoose.Schema.Types.ObjectId;
   registration_date: Date;
   location: string;
   overview: string;
@@ -20,7 +20,7 @@ export interface IFreelancer extends Document {
 }
 
 const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
-  user_account_id: { type: mongoose.Schema.Types.ObjectId, ref: "UserAccount" },
+  user_account: { type: mongoose.Schema.Types.ObjectId, ref: "UserAccount" },
   registration_date: Date,
   location: String,
   overview: String,
