@@ -5,6 +5,7 @@ import { userRouter } from "./routes/user.route";
 import { ErrorMiddleware } from "./middlewares/error";
 import { jobRouter } from "./routes/job.route";
 import cookieParser from "cookie-parser";
+import { download } from "./helper/downloadImage";
 // import { ErrorMiddleware } from "./middleware/error";
 const app: Application = express();
 
@@ -17,9 +18,10 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
+
 app.use("/api/v1", userRouter);
 app.use("/api/v1", jobRouter);
-
+app.get("/api/v1/files/:name", download);
 // TEST ONLY
 app.get("/", (req, res) => {
   res.status(200).json({

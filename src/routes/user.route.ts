@@ -1,22 +1,19 @@
 import express from "express";
 import {
-  loginFreelancer,
-  loginClient,
-  registerClient,
-  registerFreelancer,
-  getFreelancer,
+  getUser,
   loginUser,
+  registerUser,
 } from "../controllers/user.controller";
 import { isAuthenticatedUser } from "../middlewares/Auth";
 const router = express.Router();
 
-router.post("/register/freelancer", registerFreelancer);
-router.post("/login/freelancer", loginFreelancer);
+router.post("/register", registerUser);
+router.post("/login/freelancer", loginUser);
 router.post("/login", loginUser);
 
-router.get("/account/freelancer", isAuthenticatedUser, getFreelancer);
+router.get("/account", isAuthenticatedUser, getUser);
 
-router.post("/register/client", registerClient);
-router.post("/login/client", loginClient);
+// router.post("/register/client", registerClient);
+// router.post("/login/client", loginClient);
 
 export const userRouter = router;
