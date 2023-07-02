@@ -16,6 +16,7 @@ export interface IFreelancer extends Document {
   address: string;
   phone: string;
   employment_history: mongoose.Schema.Types.ObjectId[];
+  savedJobs: mongoose.Schema.Types.ObjectId[];
   meetsRequirements: (jobRequirements: any) => void;
 }
 
@@ -37,6 +38,7 @@ const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
   hourly_rate: Number,
   address: String,
   phone: String,
+  savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Jobs" }],
 });
 
 freelancerSchema.methods.meetsRequirements = function (jobRequirements) {

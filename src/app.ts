@@ -12,6 +12,8 @@ const app: Application = express();
 app.use(
   cors({
     origin: "*",
+    credentials: true,
+    exposedHeaders: ["Set-Cookie", "Date", "ETag", "sameSite"],
   })
 );
 

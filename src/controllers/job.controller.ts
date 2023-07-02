@@ -61,17 +61,32 @@ export const createNewJob = catchAsyncErrors(
 export const getAllJobListings = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const resultPerPage = 8;
+    const { skills, experienceLevel } = req.query;
 
-    const apiFeature = new ApiFeatures(Job.find(), req.query).search().filter();
+    // Create a base query to fetch all jobs
+    const baseQuery = Job.find();
 
+    // Apply filters based on the query parameters
+    if (skills) {
+      // Split the skills parameter into an array of skill IDs
+      const skillIds = skills.split(",");
+      baseQuery.where("required_skills").in(skillIds);
+    }
+
+    if (experienceLevel) {
+      baseQuery.where("experience_level").equals(experienceLevel);
+    }
+
+    // Create an instance of ApiFeatures and apply search and pagination
+    const apiFeature = new ApiFeatures(baseQuery, req.query).search();
     apiFeature.pagination(resultPerPage);
 
+    // Execute the query and populate related fields
     const jobs = await apiFeature.query.populate([
       { path: "client_id", model: Client },
       { path: "required_skills", model: Skill },
       { path: "expected_duration_id", model: ExpectedDuration },
       { path: "complexity_id", model: Complexity },
-      // { path: "payment_type_id", model: PaymentType },
     ]);
 
     const productsCount = await Job.countDocuments();
@@ -123,5 +138,19 @@ export const applyToJob = catchAsyncErrors(
     // Apply logic here...
 
     res.status(200).json({ success: true, message: "Application successful" });
+  }
+);
+
+export const saveJob = catchAsyncErrors(
+  async (req: RequestType, res: Response) => {
+    const jobId = req.params.jobId;
+    const freelancer = await Freelancer.updateOne(
+      req.user.id,
+      {
+        savedJobs: [jobId],
+      },
+      { new: true }
+    );
+    sendApiResponse(res, "success", freelancer);
   }
 );
