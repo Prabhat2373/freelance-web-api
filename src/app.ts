@@ -6,6 +6,9 @@ import { ErrorMiddleware } from "./middlewares/error";
 import { jobRouter } from "./routes/job.route";
 import cookieParser from "cookie-parser";
 import { download } from "./helper/downloadImage";
+import { proposalRouter } from "./routes/proposals.route";
+import { contractRouter } from "./routes/contract.route";
+import { companyRoutes } from "./routes/company.route";
 // import { ErrorMiddleware } from "./middleware/error";
 const app: Application = express();
 
@@ -21,8 +24,13 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// ROUTES
 app.use("/api/v1", userRouter);
 app.use("/api/v1", jobRouter);
+app.use("/api/v1", proposalRouter);
+app.use("/api/v1", contractRouter);
+app.use("/api/v1", companyRoutes);
+
 app.get("/api/v1/files/:name", download);
 // TEST ONLY
 app.get("/", (req, res) => {

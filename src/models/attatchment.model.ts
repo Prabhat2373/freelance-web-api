@@ -1,10 +1,15 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document } from "mongoose";
 
-const attachmentSchema = new mongoose.Schema({
-  message_id: { type: mongoose.Schema.Types.ObjectId, ref: "Message" },
+export interface IAttachment extends Document {
+  message_id: mongoose.Types.ObjectId;
+  attachment_link: string;
+}
+
+const attachmentSchema = new Schema<IAttachment>({
+  message_id: { type: Schema.Types.ObjectId, ref: "Message" },
   attachment_link: String,
 });
 
-const Attachment = mongoose.model("Attachment", attachmentSchema);
+const Attachment = mongoose.model<IAttachment>("Attachment", attachmentSchema);
 
-module.exports = Attachment;
+export default Attachment;

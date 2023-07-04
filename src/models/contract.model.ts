@@ -1,6 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-interface IContract extends Document {
+export interface IContract extends Document {
   proposal_id: mongoose.Types.ObjectId;
   company_id: mongoose.Types.ObjectId;
   freelancer_id: mongoose.Types.ObjectId;
