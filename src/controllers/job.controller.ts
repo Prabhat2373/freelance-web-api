@@ -11,6 +11,7 @@ import Job from "../models/job.model";
 import Skill from "../models/skill.model";
 import ApiFeatures from "../utils/ApiFeatures";
 import { sendApiResponse } from "../utils/utils";
+import PaymentType from "@/models/paymentType.model";
 export interface RequestType extends Request {
   cookies: {
     token: string;
@@ -110,7 +111,15 @@ export const getJobDetails = catchAsyncErrors(
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
-    sendApiResponse(res, "success", "Job found successfully");
+    const foundedJob = await job.populate([
+      { path: "expected_duration_id", model: ExpectedDuration },
+      { path: "complexity_id", model: Complexity },
+      { path: "payment_type_id", model: PaymentType },
+      { path: "experience_level", model: ExperienceLevel },
+      { path: "client_id", model: Client },
+      { path: "required_skills", model: Skill },
+    ]);
+    sendApiResponse(res, "success", foundedJob, "Job found successfully");
   }
 );
 
