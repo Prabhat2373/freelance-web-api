@@ -202,7 +202,6 @@ export const BASE_URL = "http://localhost:8001/api/v1/files/";
 
 export const registerUser = catchAsyncErrors(
   async (req: Request, res: Response) => {
-    // const upload = uploadSingle("file");
     await Upload(req, res);
     const { username, email, password, role, ...userDetails } = req.body;
     // Create a new user account
