@@ -29,6 +29,7 @@ export const isAuthenticatedUser = catchAsyncErrors(
       token,
       process.env.JWT_SECRET ?? ""
     ) as { id: string } | null;
+console.log('decodedData',decodedData);
 
     req.user = (await UserAccount.findById(
       decodedData?.id
