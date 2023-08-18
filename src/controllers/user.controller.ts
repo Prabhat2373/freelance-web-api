@@ -69,7 +69,6 @@ export const updateAccount = catchAsyncErrors(
 
       updatedUser = await Freelancer.findOneAndUpdate(
         { user_account: userId },
-        // { title: "TEST" }, // Use the $set operator to update fields dynamically
         { $set: req.body },
         { new: true }
       );
@@ -82,7 +81,7 @@ export const updateAccount = catchAsyncErrors(
       );
     }
 
-    return res.status(200).json({ updatedUser });
+    return sendApiResponse(res, "success", user, "User Updated Successfully");
   }
 );
 
@@ -165,7 +164,7 @@ export const getUser = catchAsyncErrors(
             model: UserAccount,
           },
         ])
-        .select("-password");
+        .select("-password -__v");
     } else if (userAccount.role === UserRole.CLIENT) {
       // Find the associated client by user_account
       user = await Client.findOne({
@@ -177,13 +176,13 @@ export const getUser = catchAsyncErrors(
             model: UserAccount,
           },
         ])
-        .select("-password");
+        .select("-password -__v");
     }
 
     if (!user) {
       return res.status(404).json({ error: "User details not found" });
     }
 
-    res.status(200).json({ success: true, user });
+    return sendApiResponse(res, "success", user, "User Found Successfully");
   }
 );
