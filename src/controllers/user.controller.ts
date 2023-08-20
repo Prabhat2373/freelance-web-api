@@ -8,6 +8,7 @@ import { RequestType } from "./job.controller";
 import { sendApiResponse } from "../utils/utils";
 import Skill from "../models/skill.model";
 import Upload, { uploadSingle } from "@/middlewares/upload";
+import EmploymentHistory from "@/models/employmentHistory.model";
 export const BASE_URL = "http://localhost:8001/api/v1/files/";
 
 export const registerUser = catchAsyncErrors(
@@ -64,19 +65,55 @@ export const updateAccount = catchAsyncErrors(
     let updatedUser;
 
     if (user.role === "freelancer") {
-      const userId = user ? user._id.toString() : "";
-      console.log("userId", userId);
+      // const userId = user ? user._id.toString() : "";
+      // console.log("userId", userId);
 
-      updatedUser = await Freelancer.findOneAndUpdate(
-        { user_account: userId },
-        { $set: req.body },
-        { new: true }
-      );
+      // if (req.body.employment_history) {
+      //   const employementHistory = await EmploymentHistory.create({
+      //     freelancer_id: user?.id,
+
+      //     ...req.body,
+      //   });
+      //   console.log("employementHistory", employementHistory);
+      // }
+
+      // updatedUser = await Freelancer.findOneAndUpdate(
+      //   { user_account: userId },
+      //   { $set: req.body },
+      //   { new: true }
+      // );
+
+      const userId = user ? user._id.toString() : "";
+
+      if (req.body.employment_history) {
+        const employmentHistoryIds = [];
+
+        for (const history of req.body.employment_history) {
+          const employmentHistory = await EmploymentHistory.create({
+            freelancer_id: user._id,
+            ...history,
+          });
+
+          employmentHistoryIds.push(employmentHistory._id);
+        }
+
+        updatedUser = await Freelancer.findOneAndUpdate(
+          { user_account: userId },
+          { $push: { employment_history: { $each: employmentHistoryIds } } },
+          { new: true }
+        );
+      } else {
+        updatedUser = await Freelancer.findOneAndUpdate(
+          { user_account: userId },
+          { $set: req.body },
+          { new: true }
+        );
+      }
     } else {
       updatedUser = await Client.findByIdAndUpdate(
         user._id,
-        // { $set: req.body }, // Use the $set operator to update fields dynamically
-        { title: "TEST" },
+        { $set: req.body }, // Use the $set operator to update fields dynamically
+        // { title: "TEST" },
         { new: true }
       );
     }

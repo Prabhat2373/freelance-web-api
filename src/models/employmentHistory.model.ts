@@ -7,7 +7,9 @@ export interface IEmploymentHistory extends Document {
   description: string;
   skills_used: mongoose.Types.ObjectId[];
   start_date: Date;
-  end_date: Date;
+  end_date?: Date;
+  currently_working: boolean;
+  employment_type: string;
 }
 
 const employmentHistorySchema: Schema<IEmploymentHistory> =
@@ -18,7 +20,12 @@ const employmentHistorySchema: Schema<IEmploymentHistory> =
     description: String,
     skills_used: [{ type: mongoose.Schema.Types.ObjectId, ref: "Skill" }],
     start_date: Date,
-    end_date: Date,
+    end_date: { type: Date, required: false },
+    currently_working: Boolean,
+    employment_type: {
+      type: String,
+      enum: ["part_time", "full_time", "contract"],
+    },
   });
 
 const EmploymentHistory = mongoose.model<IEmploymentHistory>(
