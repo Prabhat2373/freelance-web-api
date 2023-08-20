@@ -52,6 +52,19 @@ export const registerUser = catchAsyncErrors(
       user = await client.save();
     }
 
+    // await savedUserAccount.populate([
+    //   {
+    //     path: "user_account",
+    //     model: UserAccount,
+    //   },
+    // ]);
+    await user.populate([
+      {
+        path: "user_account",
+        model: UserAccount,
+      },
+    ]);
+
     sendToken(savedUserAccount, user, 200, res);
   }
 );
@@ -65,24 +78,6 @@ export const updateAccount = catchAsyncErrors(
     let updatedUser;
 
     if (user.role === "freelancer") {
-      // const userId = user ? user._id.toString() : "";
-      // console.log("userId", userId);
-
-      // if (req.body.employment_history) {
-      //   const employementHistory = await EmploymentHistory.create({
-      //     freelancer_id: user?.id,
-
-      //     ...req.body,
-      //   });
-      //   console.log("employementHistory", employementHistory);
-      // }
-
-      // updatedUser = await Freelancer.findOneAndUpdate(
-      //   { user_account: userId },
-      //   { $set: req.body },
-      //   { new: true }
-      // );
-
       const userId = user ? user._id.toString() : "";
 
       if (req.body.employment_history) {
@@ -199,6 +194,10 @@ export const getUser = catchAsyncErrors(
           {
             path: "user_account",
             model: UserAccount,
+          },
+          {
+            path: "employment_history",
+            model: EmploymentHistory,
           },
         ])
         .select("-password -__v");

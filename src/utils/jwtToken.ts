@@ -48,8 +48,8 @@ const sendToken = (
   };
 
   res.status(statusCode).cookie("token", token, cookieOptions).json({
-    success: true,
-    user,
+    status: "success",
+    data: user,
     token,
   });
 };
