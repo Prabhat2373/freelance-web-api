@@ -10,7 +10,7 @@ import Freelancer from "../models/freelancer.model";
 import Job from "../models/job.model";
 import Skill from "../models/skill.model";
 import ApiFeatures from "../utils/ApiFeatures";
-import { sendApiResponse } from "../utils/utils";
+import { sendApiResponse, sendPaginatedApiResponse } from "../utils/utils";
 import PaymentType from "@/models/paymentType.model";
 export interface RequestType extends Request {
   cookies: {
@@ -62,44 +62,89 @@ export const createNewJob = catchAsyncErrors(
 export const getAllJobListings = catchAsyncErrors(
   async (req: Request, res: Response) => {
     const resultPerPage = 8;
-    const { skills, experienceLevel } = req.query;
+    // const { skills, experienceLevel } = req.query;
 
-    // Create a base query to fetch all jobs
-    const baseQuery = Job.find();
+    // // Create a base query to fetch all jobs
+    // const baseQuery = Job.find();
 
-    // Apply filters based on the query parameters
-    if (skills) {
-      // Split the skills parameter into an array of skill IDs
-      const skillIds = skills.split(",");
-      baseQuery.where("required_skills").in(skillIds);
+    // // Apply filters based on the query parameters
+    // if (skills) {
+    //   // Split the skills parameter into an array of skill IDs
+    //   const skillIds = skills.split(",");
+    //   baseQuery.where("required_skills").in(skillIds);
+    // }
+
+    // if (experienceLevel) {
+    //   baseQuery.where("experience_level").equals(experienceLevel);
+    // }
+
+    // // Create an instance of ApiFeatures and apply search and pagination
+    // const apiFeature = new ApiFeatures(baseQuery, req.query).search();
+    // apiFeature.pagination(resultPerPage);
+
+    const { page, limit, category, search, minPrice, maxPrice, sort } =
+      req.query;
+
+    // Convert query parameters to numbers
+    const pageNumber = parseInt(page as string) || 1;
+    const limitNumber = parseInt(limit as string) || 10;
+
+    // Define the query conditions based on the category
+    const query: any = {};
+    if (category) {
+      query.category = category;
     }
 
-    if (experienceLevel) {
-      baseQuery.where("experience_level").equals(experienceLevel);
+    // Handle search query
+    if (search) {
+      query.title = { $regex: search, $options: "i" }; // Case-insensitive search
     }
 
-    // Create an instance of ApiFeatures and apply search and pagination
-    const apiFeature = new ApiFeatures(baseQuery, req.query).search();
-    apiFeature.pagination(resultPerPage);
+    // Handle price range filtering
+    if (minPrice && maxPrice) {
+      query.price = {
+        $gte: parseInt(minPrice as string),
+        $lte: parseInt(maxPrice as string),
+      };
+    } else if (minPrice) {
+      query.price = { $gte: parseInt(minPrice as string) };
+    } else if (maxPrice) {
+      query.price = { $lte: parseInt(maxPrice as string) };
+    }
+
+    const options = {
+      page: pageNumber,
+      limit: limitNumber,
+      sort,
+      populate: [
+        { path: "client_id", model: Client },
+        { path: "required_skills", model: Skill },
+        { path: "expected_duration_id", model: ExpectedDuration },
+        { path: "complexity_id", model: Complexity },
+      ],
+    };
 
     // Execute the query and populate related fields
-    const jobs = await apiFeature.query.populate([
-      { path: "client_id", model: Client },
-      { path: "required_skills", model: Skill },
-      { path: "expected_duration_id", model: ExpectedDuration },
-      { path: "complexity_id", model: Complexity },
-    ]);
+    // const jobs = await apiFeature.query.populate([
+    //   { path: "client_id", model: Client },
+    //   { path: "required_skills", model: Skill },
+    //   { path: "expected_duration_id", model: ExpectedDuration },
+    //   { path: "complexity_id", model: Complexity },
+    // ]);
+    // const jobs = await Job.paginate(query, options);
+    const jobs = await Job.paginate(query, options, function (err, result) {
+      console.log("RESULT", result);
 
-    const productsCount = await Job.countDocuments();
-    const filteredProductsCount = jobs.length;
-
-    res.status(200).json({
-      success: true,
-      jobs,
-      productsCount,
-      resultPerPage,
-      filteredProductsCount,
+      const response = {
+        ...result,
+        data: result.docs,
+        docs: undefined,
+      };
+      return response;
     });
+    console.log("JOBS", jobs);
+
+    sendPaginatedApiResponse(res, "success", jobs, "Jobs founded successfully");
   }
 );
 

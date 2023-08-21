@@ -1,4 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+
 interface IPaymentMode {
   fixed: string;
   hourly: string;
@@ -44,6 +46,7 @@ const jobSchema: Schema<IJob> = new Schema<IJob>({
   createdAt: { type: Date, default: Date.now() },
 });
 
+jobSchema.plugin(mongoosePaginate);
 const Job = mongoose.model<IJob>("Job", jobSchema);
 
 export default Job;
