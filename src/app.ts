@@ -24,7 +24,6 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-
 // ROUTES
 app.use("/api/v1", userRouter);
 app.use("/api/v1", jobRouter);
