@@ -14,8 +14,9 @@ interface RequestType extends Request {
 
 export const isAuthenticatedUser = catchAsyncErrors(
   async (req: RequestType, res: Response, next: NextFunction) => {
-    const { token } = req.cookies;
-    console.log("Cookie", req.cookies);
+    // const { token } = req.cookies;
+    const token = req.headers.authorization?.split(" ")[1];
+    // console.log("Cookie", req.cookies);
     console.log("HAS TOKEN", token);
 
     if (!token) {
@@ -24,12 +25,13 @@ export const isAuthenticatedUser = catchAsyncErrors(
         new ErrorHandler("Please Login to access this resource", 401)
       );
     }
+    console.log("checking");
 
     const decodedData: { id: string } | null = jwt.verify(
       token,
-      process.env.JWT_SECRET ?? ""
+      process.env.JWT_SECRET
     ) as { id: string } | null;
-console.log('decodedData',decodedData);
+    console.log("decodedData", decodedData);
 
     req.user = (await UserAccount.findById(
       decodedData?.id

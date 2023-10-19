@@ -10,7 +10,7 @@ export interface IFreelancer extends Document {
   country: string;
   title: string;
   experience: string;
-  education: string;
+  educations: mongoose.Schema.Types.ObjectId[];
   description: string;
   hourly_rate: number;
   address: string;
@@ -33,7 +33,7 @@ const freelancerSchema: Schema<IFreelancer> = new Schema<IFreelancer>({
   country: String,
   title: String,
   experience: String,
-  education: String,
+  educations: [{ type: mongoose.Schema.Types.ObjectId, ref: "Education" }],
   description: String,
   hourly_rate: Number,
   address: String,
