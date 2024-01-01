@@ -35,59 +35,32 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var mongoose_1 = __importDefault(require("mongoose"));
-var skill_model_1 = __importDefault(require("../models/skill.model"));
-// import Skill from "./skillModel";
-// Define the skill data
-var skillsData = [
-    { skill_name: "Skill 1" },
-    { skill_name: "Skill 2" },
-    { skill_name: "Skill 3" },
-    // Add more skills as needed
-];
-// Function to seed the skills collection
-var seedSkills = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var error_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                _a.trys.push([0, 5, , 6]);
-                // Connect to the MongoDB database
-                return [4 /*yield*/, mongoose_1.default.connect("mongodb://localhost:27017/freelance", {
-                        useNewUrlParser: true,
-                        useUnifiedTopology: true,
-                    })];
-            case 1:
-                // Connect to the MongoDB database
-                _a.sent();
-                // Remove any existing data from the skills collection
-                return [4 /*yield*/, skill_model_1.default.deleteMany({})];
-            case 2:
-                // Remove any existing data from the skills collection
-                _a.sent();
-                // Insert the skills data into the collection
-                return [4 /*yield*/, skill_model_1.default.insertMany(skillsData)];
-            case 3:
-                // Insert the skills data into the collection
-                _a.sent();
-                // Disconnect from the database
-                return [4 /*yield*/, mongoose_1.default.disconnect()];
-            case 4:
-                // Disconnect from the database
-                _a.sent();
-                console.log("Seeding completed successfully!");
-                return [3 /*break*/, 6];
-            case 5:
-                error_1 = _a.sent();
-                console.error("Seeding failed:", error_1);
-                return [3 /*break*/, 6];
-            case 6: return [2 /*return*/];
-        }
+var skillsSeeder_1 = require("./seeders/skillsSeeder");
+// Connect to your database
+// mongoose.connect(process.env.MONGO_URI);
+// Run all seeders
+function runSeeders() {
+    return __awaiter(this, void 0, void 0, function () {
+        var error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, 3, 4]);
+                    console.log("starting seeders");
+                    return [4 /*yield*/, (0, skillsSeeder_1.default)()];
+                case 1:
+                    _a.sent(); // Run your seeders
+                    console.log("All seeders executed successfully.");
+                    return [3 /*break*/, 4];
+                case 2:
+                    error_1 = _a.sent();
+                    console.error("Error running seeders:", error_1);
+                    return [3 /*break*/, 4];
+                case 3: return [7 /*endfinally*/];
+                case 4: return [2 /*return*/];
+            }
+        });
     });
-}); };
-// Call the seeding function
-seedSkills();
+}
+runSeeders();

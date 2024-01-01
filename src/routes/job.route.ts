@@ -6,8 +6,8 @@ import {
 } from "../controllers/job.controller";
 import { isAuthenticatedUser } from "../middlewares/Auth";
 const router = Router();
-router.post("/job/create", isAuthenticatedUser, createNewJob);
-router.get("/job/listings", isAuthenticatedUser, getAllJobListings);
-router.get("/job/:jobId", isAuthenticatedUser, getJobDetails);
+router.post("/jobs/create", isAuthenticatedUser, createNewJob);
+router.get("/jobs", isAuthenticatedUser, getAllJobListings);
+router.get("/jobs/:jobId", isAuthenticatedUser, getJobDetails);
 
 export const jobRouter = router;

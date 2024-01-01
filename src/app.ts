@@ -8,9 +8,10 @@ import cookieParser from "cookie-parser";
 import { download } from "./helper/downloadImage";
 import { proposalRouter } from "./routes/proposals.route";
 import { contractRouter } from "./routes/contract.route";
-import { companyRoutes } from "./routes/company.route";
+import { companyRoutes } from "./routes/company.routes";
 import employeementRoutes from "./routes/employeement.routes";
-// import { ErrorMiddleware } from "./middleware/error";
+import paymentsRouter from "./routes/payments.routes";
+
 const app: Application = express();
 
 app.use(
@@ -31,6 +32,7 @@ app.use("/api/v1", proposalRouter);
 app.use("/api/v1", contractRouter);
 app.use("/api/v1", companyRoutes);
 app.use("/api/v1", employeementRoutes);
+app.use("/api/v1", paymentsRouter);
 
 app.get("/api/v1/files/:name", download);
 // TEST ONLY

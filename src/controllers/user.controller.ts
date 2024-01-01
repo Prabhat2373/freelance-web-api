@@ -1,14 +1,15 @@
+import Upload from "@/middlewares/upload";
+import EmploymentHistory from "@/models/employmentHistory.model";
 import { Request, Response } from "express";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors";
 import UserAccount, { IUserAccount, UserRole } from "../models/account.model";
 import Client, { IClient } from "../models/client.model";
 import Freelancer, { IFreelancer } from "../models/freelancer.model";
-import sendToken from "../utils/jwtToken";
-import { RequestType } from "./job.controller";
-import { sendApiResponse } from "../utils/utils";
 import Skill from "../models/skill.model";
-import Upload, { uploadSingle } from "@/middlewares/upload";
-import EmploymentHistory from "@/models/employmentHistory.model";
+import sendToken from "../utils/jwtToken";
+import { sendApiResponse } from "../utils/utils";
+import { RequestType } from "./job.controller";
+import walletModel from "@/models/wallet.model";
 export const BASE_URL = "http://localhost:8001/api/v1/files/";
 
 export const registerUser = catchAsyncErrors(
@@ -30,6 +31,12 @@ export const registerUser = catchAsyncErrors(
 
     // Save the user account to the database
     const savedUserAccount = await userAccount.save();
+
+    const wallet = await walletModel.create({
+      userId: savedUserAccount._id,
+      balance: 0,
+    });
+    console.log("wallet", wallet);
 
     let user;
     if (role === UserRole.FREELANCER) {

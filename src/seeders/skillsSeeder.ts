@@ -9,7 +9,7 @@ const skillsData = [
 ];
 
 // Function to seed the skills collection
-const seedSkills = async () => {
+const skillsSeeder = async () => {
   try {
     console.log("running..");
     // Connect to the MongoDB database
@@ -31,6 +31,6 @@ const seedSkills = async () => {
 };
 
 // // Call the seeding function
-seedSkills();
+// skillsSeeder();
 
-export default seedSkills;
+export default skillsSeeder;

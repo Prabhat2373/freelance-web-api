@@ -45,7 +45,7 @@ var skillsData = [
     { skill_name: "Skill 3" },
 ];
 // Function to seed the skills collection
-var seedSkills = function () { return __awaiter(void 0, void 0, void 0, function () {
+var skillsSeeder = function () { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -83,5 +83,5 @@ var seedSkills = function () { return __awaiter(void 0, void 0, void 0, function
     });
 }); };
 // // Call the seeding function
-seedSkills();
-exports.default = seedSkills;
+// skillsSeeder();
+exports.default = skillsSeeder;
