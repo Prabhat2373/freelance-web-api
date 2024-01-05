@@ -1,26 +1,22 @@
-import express, { Application } from "express";
-import cors from "cors";
 import bodyParser from "body-parser";
-import { userRouter } from "./routes/user.route";
-import { ErrorMiddleware } from "./middlewares/error";
-import { jobRouter } from "./routes/job.route";
 import cookieParser from "cookie-parser";
+import cors from "cors";
+import express, { Application } from "express";
 import { download } from "./helper/downloadImage";
-import { proposalRouter } from "./routes/proposals.route";
-import { contractRouter } from "./routes/contract.route";
+import { ErrorMiddleware } from "./middlewares/error";
 import { companyRoutes } from "./routes/company.routes";
+import { contractRouter } from "./routes/contract.route";
 import employeementRoutes from "./routes/employeement.routes";
+import { jobRouter } from "./routes/job.route";
 import paymentsRouter from "./routes/payments.routes";
+import { proposalRouter } from "./routes/proposals.route";
+import { userRouter } from "./routes/user.route";
+import { testRoutes } from "./routes/test.routes";
+import corsConfig from "./config/cors.config";
 
 const app: Application = express();
 
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-    exposedHeaders: ["Set-Cookie", "Date", "ETag", "sameSite"],
-  })
-);
+app.use(corsConfig);
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -33,6 +29,7 @@ app.use("/api/v1", contractRouter);
 app.use("/api/v1", companyRoutes);
 app.use("/api/v1", employeementRoutes);
 app.use("/api/v1", paymentsRouter);
+app.use("/api/v1", testRoutes);
 
 app.get("/api/v1/files/:name", download);
 // TEST ONLY

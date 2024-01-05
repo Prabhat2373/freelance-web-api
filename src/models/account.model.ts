@@ -8,6 +8,10 @@ export enum UserRole {
   FREELANCER = "freelancer",
 }
 
+interface CompletedTest {
+  testId: string;
+  answers: { questionId: string; selectedOption: string }[];
+}
 export interface IUserAccount extends Document {
   username: string;
   email: string;
@@ -20,7 +24,18 @@ export interface IUserAccount extends Document {
   getJWTToken: () => string;
   comparePassword: (password: string) => Promise<boolean>;
   getResetPasswordToken: () => string;
+  completedTests: CompletedTest[];
 }
+
+const CompletedTestSchema = new Schema({
+  testId: String,
+  answers: [
+    {
+      questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
+      selectedOption: String,
+    },
+  ],
+});
 
 const userAccountSchema: Schema = new Schema({
   username: { type: String, required: true, unique: true },
@@ -31,6 +46,8 @@ const userAccountSchema: Schema = new Schema({
   password: { type: String, required: true },
   avatar: { type: String },
   isPaymentVerified: { type: Boolean },
+  completedTests: [CompletedTestSchema],
+  // skills:{type:[]}
 });
 
 // Hash password before saving

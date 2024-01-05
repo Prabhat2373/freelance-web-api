@@ -1,10 +1,16 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, Document } from "mongoose";
+import { Question, QuestionSchema } from "./questions.model";
 
-const testSchema = new mongoose.Schema({
-  test_name: String,
-  test_link: String,
+export interface Test extends Document {
+  name: string;
+  description: string;
+  questions: Question[];
+}
+
+const TestSchema = new Schema({
+  name: String,
+  description: String,
+  questions: [QuestionSchema],
 });
 
-const Test = mongoose.model("test", testSchema);
-
-module.exports = Test;
+export const Test = mongoose.model<Test>("Test", TestSchema);

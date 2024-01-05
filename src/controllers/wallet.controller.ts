@@ -5,8 +5,8 @@ import Transaction from "@/models/transaction.model";
 import catchAsyncErrors from "@/middlewares/catchAsyncErrors";
 
 const razorpay = new Razorpay({
-  key_id: "YOUR_RAZORPAY_KEY_ID",
-  key_secret: "YOUR_RAZORPAY_KEY_SECRET",
+  key_id: "rzp_test_8svWfAxaOc8MjE",
+  key_secret: "0Hkft10YNZnMwhFaDX8XnFAq",
 });
 
 export const sendMoney = catchAsyncErrors(
@@ -27,17 +27,33 @@ export const sendMoney = catchAsyncErrors(
       return res.status(400).json({ message: "Insufficient funds" });
     }
 
+    console.log("Sending money");
+    let paymentLink;
     // Create a Razorpay payment link
-    const paymentLink = await razorpay.invoices.create({
-      amount,
-      currency: "INR", // Adjust based on your currency
-      receipt: `transaction_${Date.now()}`,
-      payment_capture: 1,
-      notes: {
-        senderId,
-        receiverId,
-      },
-    });
+    await razorpay.invoices
+      .create({
+        amount,
+        currency: "INR", // Adjust based on your currency
+        receipt: `transaction_${Date.now()}`,
+        description: "Test transaction",
+        // payment_capture: "1",
+        type: "link",
+        line_items: [],
+        notes: {
+          senderId,
+          receiverId,
+        },
+      })
+      .then((res) => {
+        console.log("money sent", res);
+        paymentLink = res?.short_url;
+      })
+      .catch((err) => {
+        console.log("error sending money", err);
+      });
+    console.log("razorpay exected");
+
+    console.log("paymentLink", paymentLink);
 
     // Deduct the amount from the sender's balance
     senderWallet.balance -= amount;
@@ -51,7 +67,7 @@ export const sendMoney = catchAsyncErrors(
     senderWallet.transactions.push(transaction._id);
     await senderWallet.save();
 
-    return res.status(200).json({ paymentLink: paymentLink.short_url });
+    return res.status(200).json({ paymentLink });
   }
 );
 
