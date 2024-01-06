@@ -1,3 +1,4 @@
+import catchAsyncErrors from "@/middlewares/catchAsyncErrors";
 import UserAccount from "@/models/account.model";
 import { Test } from "@/models/test.model";
 import { Request, Response } from "express";
@@ -67,3 +68,19 @@ export const getTestResult = async (
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+export const seedTests = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const body = req.body;
+
+    console.log("body", body);
+
+    const savedTests = await Test.create({
+      name: body.name,
+      description: body.description,
+    });
+    console.log("savedTests", savedTests);
+
+    res.json(savedTests);
+  }
+);

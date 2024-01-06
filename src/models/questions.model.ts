@@ -1,9 +1,16 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export interface IOptions {
+  name: string;
+}
+
+const questionOptionSchema = new Schema<IOptions>({
+  name: { type: String, required: true },
+});
+
 export interface Question {
-  id: string;
   text: string;
-  options: string[];
+  options: IOptions[];
   correctOption: string;
 }
 
@@ -14,10 +21,17 @@ export interface Test extends Document {
 }
 
 export const QuestionSchema = new Schema({
-  id: String,
   text: String,
-  options: [String],
+
+  // options: [questionOptionSchema],
+  // options: [{ type: [{ name: String }], required: true }],
+  // options: [{ type: String, required: true }],
+  // options: { type: Number, required: true },
+  options: [questionOptionSchema],
+
   correctOption: String,
 });
+
+console.log("QuestionSchema", QuestionSchema);
 
 export const Question = mongoose.model<Question>("Question", QuestionSchema);
