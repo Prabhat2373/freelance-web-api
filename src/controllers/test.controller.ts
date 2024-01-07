@@ -1,6 +1,6 @@
 import catchAsyncErrors from "@/middlewares/catchAsyncErrors";
 import UserAccount from "@/models/account.model";
-import { Test } from "@/models/test.model";
+import { Test } from "../models/tests.model";
 import { Request, Response } from "express";
 
 export const getAllTests = async (
@@ -76,8 +76,8 @@ export const seedTests = catchAsyncErrors(
     console.log("body", body);
 
     const savedTests = await Test.create({
-      name: body.name,
-      description: body.description,
+      name: "test",
+      ...body,
     });
     console.log("savedTests", savedTests);
 

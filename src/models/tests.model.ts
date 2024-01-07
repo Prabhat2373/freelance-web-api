@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from "mongoose";
 import { Question, QuestionSchema } from "./questions.model";
 
 export interface ITest extends Document {
-  text: string;
+  name: string;
   description: string;
   questions: Question[];
 }
@@ -10,11 +10,7 @@ export interface ITest extends Document {
 console.log("inside test");
 
 const TestSchema = new Schema({
-  namee: {
-    type: String,
-    required: true,
-  },
-  // text: String,
+  name: String,
   description: {
     type: String,
     required: true,
