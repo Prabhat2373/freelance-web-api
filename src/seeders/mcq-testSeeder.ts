@@ -1,7 +1,8 @@
 // import { Test } from "@/models/test.model";
 // import Test from "@/models/test.model";
 // import testModel from "../models/test";
-import { Test } from "../models/test.model";
+// import { Test } from "../models/test.model";
+import { Test } from "../models/tests.model";
 import mongoose from "mongoose";
 // import { TestModel } from "./models/TestModel";
 
@@ -15,32 +16,32 @@ const testsData = [
         text: 'What is the purpose of the "useEffect" hook in React?',
         options: [
           { name: "To fetch data from the server" },
-          //   {
-          //     name: "To perform side effects in function components",
-          //   },
-          //   { name: "To create a new state variable" },
-          //   { name: "To define a new component" },
+          {
+            name: "To perform side effects in function components",
+          },
+          { name: "To create a new state variable" },
+          { name: "To define a new component" },
         ],
         correctOption: "opt2",
       },
     ],
   },
-  //   {
-  //     name: "Graphics Designer Test",
-  //     description: "Test for evaluating graphics design skills",
-  //     questions: [
-  //       {
-  //         text: "Which software is commonly used for vector graphics design?",
-  //         // options: [
-  //         //   { name: "Adobe Photoshop" },
-  //         //   { name: "Sketch" },
-  //         //   { name: "Adobe Illustrator" },
-  //         //   { name: "CorelDRAW" },
-  //         // ],
-  //         correctOption: "opt3",
-  //       },
-  //     ],
-  //   },
+  {
+    name: "Graphics Designer Test",
+    description: "Test for evaluating graphics design skills",
+    questions: [
+      {
+        text: "Which software is commonly used for vector graphics design?",
+        options: [
+          { name: "Adobe Photoshop" },
+          { name: "Sketch" },
+          { name: "Adobe Illustrator" },
+          { name: "CorelDRAW" },
+        ],
+        correctOption: "opt3",
+      },
+    ],
+  },
 ];
 
 // Function to seed the tests collection
