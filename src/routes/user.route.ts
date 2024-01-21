@@ -14,6 +14,7 @@ router.post("/login", loginUser);
 router.put("/account", isAuthenticatedUser, updateAccount);
 router.get("/account", isAuthenticatedUser, getUser);
 
+
 // router.post("/register/client", registerClient);
 // router.post("/login/client", loginClient);
 

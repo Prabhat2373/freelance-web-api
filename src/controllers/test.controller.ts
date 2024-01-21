@@ -2,51 +2,48 @@ import catchAsyncErrors from "@/middlewares/catchAsyncErrors";
 import UserAccount from "@/models/account.model";
 import { Test } from "../models/tests.model";
 import { Request, Response } from "express";
+import { sendApiResponse } from "@/utils/utils";
+import SubmittedTests from "@/models/submittedTests.model";
 
-export const getAllTests = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  try {
+export const getAllTests = catchAsyncErrors(
+  async (_req: Request, res: Response): Promise<void> => {
     const tests = await Test.find();
-    res.json(tests);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    return sendApiResponse(
+      res,
+      "success",
+      tests,
+      "All Tests Fetched Successfully"
+    );
   }
-};
+);
 
-export const getTestById = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { id } = req.params;
-  try {
+export const getTestById = catchAsyncErrors(
+  async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
     const test = await Test.findById(id);
     if (test) {
-      res.json(test);
+      return sendApiResponse(res, "success", test, "Test Fetched Successfully");
     } else {
       res.status(404).json({ error: "Test not found" });
     }
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
   }
-};
+);
 
-export const submitTest = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  const { id } = req.params;
-  const { answers } = req.body;
+export const submitTest = catchAsyncErrors(
+  async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+    const { answers } = req.body;
 
-  try {
-    const user = new UserAccount({ completedTests: [{ testId: id, answers }] });
-    await user.save();
-    res.json({ message: "Test submitted successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
+    // const user = new UserAccount({
+    //   completedTests: [{ testId: id, answers }],
+    // });
+    // await user.save();
+    const savedTest = await SubmittedTests.create({
+      
+    })
+    return sendApiResponse(res, "success", {}, "Test submitted successfully");
   }
-};
+);
 
 export const getTestResult = async (
   req: Request,

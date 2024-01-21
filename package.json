@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run build && node build/server.js",
     "dev": "tsx watch src/server.ts",
-    "build": "rimraf ./build && tsc"
+    "build": "rimraf ./build && tsc",
+    "seed": "ts-node src/seeders/index.ts",
+    "seed:spec": "ts-node src/seeders/index.ts --name",
+    "argument": "echo \"The value of --foo is '${npm_config_foo}'\""
   },
   "keywords": [],
   "author": "",

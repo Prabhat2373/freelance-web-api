@@ -9,6 +9,8 @@ const proposalStatuses = [
 
 const seedProposalStatusCatalog = async () => {
   try {
+    console.log("running seed proposal status seeder");
+
     // Clear existing data
     await ProposalStatusCatalog.deleteMany({});
 

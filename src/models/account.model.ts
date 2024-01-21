@@ -27,18 +27,8 @@ export interface IUserAccount extends Document {
   completedTests: CompletedTest[];
 }
 
-const CompletedTestSchema = new Schema({
-  testId: String,
-  answers: [
-    {
-      questionId: { type: mongoose.Schema.Types.ObjectId, ref: "Question" },
-      selectedOption: String,
-    },
-  ],
-});
-
 const userAccountSchema: Schema = new Schema({
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   paymentMethod: { type: String, required: false },
   isVerified: { type: Boolean, default: false },
@@ -46,7 +36,10 @@ const userAccountSchema: Schema = new Schema({
   password: { type: String, required: true },
   avatar: { type: String },
   isPaymentVerified: { type: Boolean },
-  completedTests: [CompletedTestSchema],
+  completedTests: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "SubmittedTests",
+  },
   // skills:{type:[]}
 });
 

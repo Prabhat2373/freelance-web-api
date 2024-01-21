@@ -31,6 +31,6 @@ const skillsSeeder = async () => {
 };
 
 // // Call the seeding function
-// skillsSeeder();
+skillsSeeder();
 
 export default skillsSeeder;

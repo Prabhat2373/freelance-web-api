@@ -13,6 +13,7 @@ import { proposalRouter } from "./routes/proposals.route";
 import { userRouter } from "./routes/user.route";
 import { testRoutes } from "./routes/test.routes";
 import corsConfig from "./config/cors.config";
+import appRouter from "./routes/app.routes";
 
 const app: Application = express();
 
@@ -29,6 +30,7 @@ app.use("/api/v1", contractRouter);
 app.use("/api/v1", companyRoutes);
 app.use("/api/v1", employeementRoutes);
 app.use("/api/v1", paymentsRouter);
+app.use("/api/v1", appRouter);
 app.use("/api/v1", testRoutes);
 
 app.get("/api/v1/files/:name", download);
@@ -36,7 +38,7 @@ app.get("/api/v1/files/:name", download);
 app.get("/", (req, res) => {
   res.status(200).json({
     status: "success",
-    message: "connecttion success!",
+    message: "connection success!",
   });
 });
 
