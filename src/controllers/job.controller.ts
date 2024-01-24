@@ -208,3 +208,44 @@ export const saveJob = catchAsyncErrors(
     sendApiResponse(res, "success", freelancer);
   }
 );
+
+export const getExpectedDurations = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    console.log("testtttt");
+
+    const durations = await ExpectedDuration.find({});
+    console.log("durations", durations);
+
+    return sendApiResponse(
+      res,
+      "success",
+      durations,
+      "Durations Found Successfully"
+    );
+  }
+);
+
+export const getComplexities = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const complexities = await Complexity.find({});
+    return sendApiResponse(
+      res,
+      "success",
+      complexities,
+      "Complexities Found Successfully"
+    );
+  }
+);
+
+export const getPaymentTypes = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const paymentTypes = await PaymentType.find({});
+
+    return sendApiResponse(
+      res,
+      "success",
+      paymentTypes,
+      "Payment Types Found Successfully"
+    );
+  }
+);
