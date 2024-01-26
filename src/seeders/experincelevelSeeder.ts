@@ -14,6 +14,8 @@ const experienceLevels = [
 // Function to seed the experience levels
 const seedExperienceLevels = async () => {
   try {
+    console.log("Running Experience levels seeder");
+
     // Delete existing experience levels
     await ExperienceLevel.deleteMany({});
 

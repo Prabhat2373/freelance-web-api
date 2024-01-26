@@ -249,3 +249,16 @@ export const getPaymentTypes = catchAsyncErrors(
     );
   }
 );
+
+export const getExperienceLevels = catchAsyncErrors(
+  async (req, res: Response) => {
+    const levels = await ExperienceLevel.find({});
+
+    return sendApiResponse(
+      res,
+      "success",
+      levels,
+      "Experience Levels Found Successfully"
+    );
+  }
+);

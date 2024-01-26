@@ -4,7 +4,6 @@ import PaymentType from "../models/paymentType.model";
 
 const paymentTypeSeeder = async () => {
   mongoose.connect("mongodb://127.0.0.1:27017/freelance");
-
   const db = mongoose.connection;
   try {
     db.once("open", () => {

@@ -4,6 +4,7 @@ import {
   getAllJobListings,
   getComplexities,
   getExpectedDurations,
+  getExperienceLevels,
   getJobDetails,
   getPaymentTypes,
 } from "../controllers/job.controller";
@@ -15,5 +16,6 @@ router.get("/jobs/:jobId", isAuthenticatedUser, getJobDetails);
 router.get("/exected-durations", getExpectedDurations);
 router.get("/complexities", getComplexities);
 router.get("/payment-types", getPaymentTypes);
+router.get("/experience-levels", getExperienceLevels);
 
 export const jobRouter = router;
