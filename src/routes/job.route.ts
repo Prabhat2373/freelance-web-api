@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createNewJob,
   getAllJobListings,
+  getClientJobs,
   getComplexities,
   getExpectedDurations,
   getExperienceLevels,
@@ -13,6 +14,7 @@ const router = Router();
 router.post("/jobs/create", isAuthenticatedUser, createNewJob);
 router.get("/jobs", isAuthenticatedUser, getAllJobListings);
 router.get("/jobs/:jobId", isAuthenticatedUser, getJobDetails);
+router.get("/client/jobs", isAuthenticatedUser, getClientJobs);
 router.get("/exected-durations", getExpectedDurations);
 router.get("/complexities", getComplexities);
 router.get("/payment-types", getPaymentTypes);
