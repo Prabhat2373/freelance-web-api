@@ -71,12 +71,20 @@ export const getAllJobListings = catchAsyncErrors(
     const { page, limit, category, search, minPrice, maxPrice, sort } =
       req.query;
 
+    const user = req.user;
+    console.log("user", user);
+
     // Convert query parameters to numbers
     const pageNumber = parseInt(page as string) || 1;
     const limitNumber = parseInt(limit as string) || 10;
 
     // Define the query conditions based on the category
-    const query: any = { drafts: false };
+    // const query: any = { drafts: false };
+    const query: any = {};
+
+    // if(user.role === 'client'){
+
+    // }
 
     if (category) {
       query.category = category;
@@ -120,6 +128,7 @@ export const getAllJobListings = catchAsyncErrors(
     // ]);
     // const jobs = await Job.paginate(query, options);
     const jobs = await Job.paginate(query, options, formatPaginate);
+    // const jobs = await Job.find({});
     console.log("JOBS", jobs);
 
     sendPaginatedApiResponse(res, "success", jobs, "Jobs founded successfully");
