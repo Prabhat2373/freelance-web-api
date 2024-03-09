@@ -76,6 +76,54 @@ export const registerUser = catchAsyncErrors(
   }
 );
 
+// export const updateAccount = catchAsyncErrors(
+//   async (req: RequestType, res: Response) => {
+//     const user = req.user;
+//     console.log("user", user);
+//     console.log("body", req.body);
+
+//     let updatedUser;
+
+//     if (user.role === "freelancer") {
+//       const userId = user ? user._id.toString() : "";
+
+//       if (req.body.employment_history) {
+//         const employmentHistoryIds = [];
+
+//         for (const history of req.body.employment_history) {
+//           const employmentHistory = await EmploymentHistory.create({
+//             freelancer_id: user._id,
+//             ...history,
+//           });
+
+//           employmentHistoryIds.push(employmentHistory._id);
+//         }
+
+//         updatedUser = await Freelancer.findOneAndUpdate(
+//           { user_account: userId },
+//           { $push: { employment_history: { $each: employmentHistoryIds } } },
+//           { new: true }
+//         );
+//       } else {
+//         updatedUser = await Freelancer.findOneAndUpdate(
+//           { user_account: userId },
+//           { $set: req.body },
+//           { new: true }
+//         );
+//       }
+//     } else {
+//       updatedUser = await Client.findByIdAndUpdate(
+//         user._id,
+//         { $set: req.body }, // Use the $set operator to update fields dynamically
+//         // { title: "TEST" },
+//         { new: true }
+//       );
+//     }
+
+//     return sendApiResponse(res, "success", user, "User Updated Successfully");
+//   }
+// );
+
 export const updateAccount = catchAsyncErrors(
   async (req: RequestType, res: Response) => {
     const user = req.user;
@@ -88,20 +136,36 @@ export const updateAccount = catchAsyncErrors(
       const userId = user ? user._id.toString() : "";
 
       if (req.body.employment_history) {
-        const employmentHistoryIds = [];
+        const employmentHistoryUpdates = req.body.employment_history.map(
+          async (history) => {
+            if (history._id) {
+              // If the employment history entry has an _id, update it
+              return EmploymentHistory.findOneAndUpdate(
+                { _id: history._id },
+                { $set: history },
+                { new: true }
+              );
+            } else {
+              // Otherwise, create a new employment history entry
+              const employmentHistory = await EmploymentHistory.create({
+                freelancer_id: user._id,
+                ...history,
+              });
+              return employmentHistory;
+            }
+          }
+        );
 
-        for (const history of req.body.employment_history) {
-          const employmentHistory = await EmploymentHistory.create({
-            freelancer_id: user._id,
-            ...history,
-          });
-
-          employmentHistoryIds.push(employmentHistory._id);
-        }
+        const updatedEmploymentHistories = await Promise.all(
+          employmentHistoryUpdates
+        );
+        const employmentHistoryIds = updatedEmploymentHistories.map(
+          (history) => history._id
+        );
 
         updatedUser = await Freelancer.findOneAndUpdate(
           { user_account: userId },
-          { $push: { employment_history: { $each: employmentHistoryIds } } },
+          { $set: { employment_history: employmentHistoryIds } },
           { new: true }
         );
       } else {
@@ -115,7 +179,6 @@ export const updateAccount = catchAsyncErrors(
       updatedUser = await Client.findByIdAndUpdate(
         user._id,
         { $set: req.body }, // Use the $set operator to update fields dynamically
-        // { title: "TEST" },
         { new: true }
       );
     }
